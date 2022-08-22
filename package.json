@@ -1,0 +1,53 @@
+{
+  "name": "lbg-content-server",
+  "version": "1.0.0",
+  "description": "Living Building Group Content Server",
+  "main": "index.js",
+  "engines": {
+    "node": "16.14.2",
+    "npm": "8.5.5"
+  },
+  "repository": {
+    "type": "git",
+    "url": "https://github.com/bradcgarner/lbg-content.git"
+  },
+  "scripts": {
+    "start": "nodemon start",
+    "heroku": "pm2-runtime start ecosystem.config.js --env production",
+    "test": "nyc mocha --colors  */*.test.js",
+    "cover": "nodemon --exec nyc --reporter=lcov --reporter=text-summary mocha test/setup.test.js */*.test.js",
+    "compileKeys": "node server-compile-keys.js",
+    "compileData": "node server-compile-data.js"
+  },
+  "author": "Brad Garner <brad@greenroofdiagnostics.com>",
+  "license": "UNLICENSED",
+  "dependencies": {
+    "@sendgrid/mail": "^6.5.5",
+    "atob": "^2.1.2",
+    "bcrypt": "^5.0.0",
+    "bcryptjs": "^2.4.3",
+    "btoa": "^1.2.1",
+    "bufferutil": "^4.0.1",
+    "compression": "^1.7.4",
+    "conjunction-junction": "^3.14.75",
+    "cors": "^2.8.5",
+    "dotenv": "^4.0.0",
+    "express": "^4.16.4",
+    "generate-password": "^1.4.1",
+    "jsonwebtoken": "^8.3.0",
+    "knex": "^0.95.2",
+    "log123": "^1.0.0",
+    "mongoose": "^6.2.3",
+    "morgan": "^1.9.1",
+    "pg": "^8.5.1",
+    "pm2": "^5.2.0",
+    "utf-8-validate": "^5.0.2"
+  },
+  "devDependencies": {
+    "chai": "^4.2.0",
+    "chai-http": "^4.2.0",
+    "mocha": "^7.1.2",
+    "nodemon": "^2.0.4",
+    "nyc": "^15.0.0"
+  }
+}
