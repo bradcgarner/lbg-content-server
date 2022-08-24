@@ -14,7 +14,6 @@ const {
   hasSql }                   = require('../helpers/_security');
 const { Content }            = require('../models/content');
 const knex                   = require('../db-sql');
-const knexStormWatch         = require('../db-sql-stormwatch');
 const { 
   createUpdateSimpleTableArrSql
 }                            = require('../config-db/db-custom');
@@ -48,7 +47,7 @@ router.get('/image-data', (req, res)=> {
           `where ${where2}` :
           '' ;
   const getDataSql = `select * from butter_images ${where} order by image_path_related asc, ratio desc;`;
-  return knexStormWatch.raw(getDataSql)
+  return knex.raw(getDataSql)
     .then(found=>{
       const makeCamel = true;
       const data = validateRawKnex(found, getDataSql, makeCamel, {returnInvalid: []});
