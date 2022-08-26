@@ -153,7 +153,7 @@ router.get('/', (req, res) => {
           if(meta){
             result.metas = metas;
           }
-          logger.info(result)
+          // logger.info(result)
           return res.status(200).json(result);
         });
     })
@@ -191,6 +191,8 @@ router.put('/image-data', (req, res)=> {
 router.put('/', (req, res)=> {
 
   const {level2, level2Key, level3, site} = req.query;
+	// console.log({level2, level2Key, level3, site});
+	// logger.info(req.body)
 
   // USE OPTION BELOW IN DEV TO TEMPORARILY ADD KEYS
   // console.log('contentToUpdate.content',contentToUpdate.content)
@@ -242,12 +244,14 @@ router.put('/', (req, res)=> {
         return found;
       })
       .then(contentToUpdate=>{
+				// logger.info({contentToUpdate})
         contentToUpdate.content[level3] = req.body;
         return Content.updateOne({level2: level2Key},contentToUpdate)
           .then(()=>{
             return;
           })
           .then(()=>{
+						// logger.info({contentToUpdate})
             return res.status(200).json(contentToUpdate.content[level3]);
           });
       })
@@ -255,7 +259,7 @@ router.put('/', (req, res)=> {
         respondToError(err, res);
       });
   }
-  return res.status(500).json({message: 'Internal Server Error'});
+  return res.status(500).json({message: 'Unable to process request'});
 });
 
 module.exports = {
