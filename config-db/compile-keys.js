@@ -31,12 +31,12 @@ const compileKeys = () => {
         // populate the object of all keys
         if(!hash_snake[k.snake]){
           hash_snake[k.snake] = compacted;
-        }
-        if(!hashCamel[cc]){
           hashCamel[cc] = compacted;
         }
       });
+      console.log({hashCamel})
     })
+
     .then(()=>{
 
       // create table object 
@@ -87,16 +87,16 @@ const compileKeys = () => {
         // next filter the newly created arrays
         theT.list_fetch_snakes = snakes.filter(k=>hash_snake[k].list_fetch);
         theT.post_snakes = snakes.filter(k=>hash_snake[k].post);
-        theT.postCamels = camels.filter(k=>hashCamel[k].post);
+        theT.postCamels = camels.filter(cc=>hashCamel[cc].post);
 
         theT.post_req_snakes = snakes.filter(k=>hash_snake[k].post_req);
-        theT.post_reqCamels = camels.filter(k=>hashCamel[k].post_req);
+        theT.postReqCamels = camels.filter(cc=>hashCamel[cc].post_req);
 
         theT.put_snakes = snakes.filter(k=>hash_snake[k].put);
-        theT.putCamels = camels.filter(k=>hashCamel[k].put);
+        theT.putCamels = camels.filter(cc=>hashCamel[cc].put);
 
         theT.subtable_snakes = snakes.filter(k=>hash_snake[k].subtable);
-        theT.subtableCamels = camels.filter(k=>hashCamel[k].subtable);
+        theT.subtableCamels = camels.filter(cc=>hashCamel[cc].subtable);
 
         /* Prefixed keys: create an object to be used as a constant to be used in SQL join statements.
          * INPUT: list of keys from global space

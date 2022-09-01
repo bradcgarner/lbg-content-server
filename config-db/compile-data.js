@@ -2,53 +2,14 @@
 
 const { 
   convertScToCc,
-  limitObjectKeys,
-  convertArrayToObject,
   inchesToMmRound }       = require('conjunction-junction');
 const { keysCompileFile } = require('../config');
 const fs                  = require('fs');
 const logger              = require('log123').createLogger(keysCompileFile,'no-header'); 
 const knex                = require('../db-sql');
-const { Storm }           = require('../models/storms');
 
 const createDummies = false; // create dummy products
 // see notes below where used
-
-const stormKeys = [
-  'idShape',
-  'name',
-  'arrCumPctVolNative',
-];
-const stormKeysInstant = [
-  'idShape',
-  'name',
-  'arrInstantVolNative',
-  'useInstant',
-];
-
-const createStormsIndex = storms => {
-  if(!Array.isArray(storms)){
-    return {
-      stormsObj: {},
-      stormsOptions: [],
-    };
-  }
-  const stormsLimited = storms.map(s=>{
-    const limited = s.useInstant ?
-      limitObjectKeys(s, stormKeysInstant):
-      limitObjectKeys(s, stormKeys);
-    limited.idShape = s._id;
-    return limited;
-  });
-  const _stormsObj = convertArrayToObject(stormsLimited, 'idShape');
-  const _stormsOptions = stormsLimited.map(s=>{
-    return {idShape: s.idShape, name: s.name};
-  });
-  return {
-    _stormsObj,
-    _stormsOptions,
-  };
-};
 
 const formatProduct = r => {
   const thisProduct = {};
@@ -129,9 +90,6 @@ const compileData = () => {
   const allPaths    = {};
   const versions    = [];
   const reviewers   = [];
-  const storms      = {};
-  let stormsObj     = {};
-  let stormsOptions = {};
   let publicSystemsObject;
   let minimalSystemsObject = {};
   let partnersObject = {};
@@ -450,21 +408,6 @@ notes from products where id = ${originalId}; `;
         });
     })
     .then(()=>{
-      return Storm.find({})
-        .then(found=>{
-          const {
-            _stormsObj,
-            _stormsOptions,
-          } = createStormsIndex(found);
-          stormsObj     = _stormsObj;
-          stormsOptions = _stormsOptions;
-          found.forEach(s=>{
-            storms[s._id] = s.name;
-          });
-          return;
-        });
-    })
-    .then(()=>{
     
       const contents = `'use strict';
       
@@ -484,12 +427,6 @@ const versions = ${JSON.stringify(versions,null,2)};
 
 const reviewers = ${JSON.stringify(reviewers,null,2)};
 
-const storms = ${JSON.stringify(storms, null, 2)};
-
-const stormsObj = ${JSON.stringify(stormsObj, null, 2)};
-
-const stormsOptions = ${JSON.stringify(stormsOptions, null, 2)};
-
 const faq = ${JSON.stringify(faq, null, 2)};
 
 const terminology = ${JSON.stringify(terminology, null, 2)};
@@ -503,14 +440,11 @@ module.exports = {
   allPaths,
   versions,
   reviewers,
-  storms,
-  stormsObj,
-  stormsOptions,
   faq,
   terminology,
 };`;
       
-      return fs.writeFile('./keys/data.js', contents, function (err) {
+      return fs.writeFile('./config-db/data.js', contents, function (err) {
         if (err) throw err;
         console.log('Success! We just updated data.js');
       });

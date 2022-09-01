@@ -6,7 +6,7 @@ const express          = require('express');
 const mongoose         = require('mongoose');
 const logger           = require('log123').createLogger(''); // logs to console if no filename
 const app              = express();
-const { compileKeys }  = require('./keys/compile-keys');
+const { compileKeys }  = require('./config-db/compile-keys');
 
 mongoose.Promise = global.Promise;
 

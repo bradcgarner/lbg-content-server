@@ -14,7 +14,7 @@ const logger              = require('log123').createLogger(contentFile);
 const { 
   handleAttemptedHack }   = require('../comm/hack');
 const { respondToError  } = require('../comm/responses');
-const { tables }          = require('../keys/keys');
+const { tables }          = require('../config-db/keys');
 const { jwtStrategy   }   = require('./auth');
 router.use(express.json());
 

@@ -34,18 +34,30 @@ router.get('/image-data', (req, res)=> {
   const ratio = typeof req.query.ratio === 'string' && req.query.ratio !== 'null' && req.query.ratio !== 'undefined'?
     parseFloat(req.query.ratio) : null;
   const operator = req.query.operator === 'or' ? 'or' : 'and';
+  const keywords = typeof req.query.keywords === 'string' ?
+    req.query.keywords.split(',').map(t=>t.trim()) : [];
 
-  const where1 = ratio ? `(ratio >= ${precisionRound(ratio - 0.05,4)} and ratio <= ${precisionRound(ratio + 0.05,4)})` : null ;
-  const where2 = tags.length > 0 && tags[0] ?
+  const whereRatio = ratio ? `(ratio >= ${precisionRound(ratio - 0.05,4)} and ratio <= ${precisionRound(ratio + 0.05,4)})` : null ;
+  const whereTags = tags.length > 0 && tags[0] ?
     `${tags.map(t=>`'${t}'=any(tags)`).join(` ${operator} `)}` : null ;
+  const whereKeywords = keywords.length > 0 && keywords[0] ?
+    `${keywords.map(k=>`'${k}'=any(keywords)`).join(' or ')}` : null ;
   const where = 
-    where1 && where2 ? 
-      `where ${where1} and (${where2})` :
-      where1 ?
-        `where ${where1}` :
-        where2 ?
-          `where ${where2}` :
-          '' ;
+  whereRatio && whereTags && whereKeywords ? 
+    `where ${whereRatio} and ((${whereTags}) or (${whereKeywords}))` :
+    whereRatio && whereTags ? 
+      `where ${whereRatio} and (${whereTags})` :
+      whereRatio && whereKeywords ? 
+        `where ${whereRatio} and (${whereKeywords})` :
+        whereTags && whereKeywords ? 
+          `where ((${whereTags}) or (${whereKeywords}))` :
+          whereRatio ?
+            `where ${whereRatio}` :
+            whereTags ?
+              `where ${whereTags}` :
+              whereKeywords ?
+                `where ${whereKeywords}` :
+                '' ;
   const getDataSql = `select * from butter_images ${where} order by image_path_related asc, ratio desc;`;
   return knex.raw(getDataSql)
     .then(found=>{
@@ -58,7 +70,12 @@ router.get('/image-data', (req, res)=> {
           d.tags = tags;
         } else {
           d.tags = {};
-        }        
+        }   
+        if(Array.isArray(d.keywords)){
+          d.keywords = d.keywords.sort().join(',');
+        } else {
+          d.keywords = '';
+        }      
       });
       return res.status(200).json(data);
     })
@@ -174,7 +191,11 @@ router.put('/image-data', (req, res)=> {
     const tags = i.tags ?
       Object.keys(i.tags).filter(t=>i.tags[t]) : [];
     i.tags = tags;
+    const keywords = typeof i.keywords === 'string' ?
+      i.keywords.split(',').map(k=>k.trim()) : [];
+    i.keywords = keywords;
   });
+
   const putImagesSql  = createUpdateSimpleTableArrSql('butter_images',images);
   return knex.raw(putImagesSql)
     .then(()=>{
@@ -191,8 +212,8 @@ router.put('/image-data', (req, res)=> {
 router.put('/', (req, res)=> {
 
   const {level2, level2Key, level3, site} = req.query;
-	// console.log({level2, level2Key, level3, site});
-	// logger.info(req.body)
+  // console.log({level2, level2Key, level3, site});
+  // logger.info(req.body)
 
   // USE OPTION BELOW IN DEV TO TEMPORARILY ADD KEYS
   // console.log('contentToUpdate.content',contentToUpdate.content)
@@ -244,14 +265,14 @@ router.put('/', (req, res)=> {
         return found;
       })
       .then(contentToUpdate=>{
-				// logger.info({contentToUpdate})
+        // logger.info({contentToUpdate})
         contentToUpdate.content[level3] = req.body;
         return Content.updateOne({level2: level2Key},contentToUpdate)
           .then(()=>{
             return;
           })
           .then(()=>{
-						// logger.info({contentToUpdate})
+            // logger.info({contentToUpdate})
             return res.status(200).json(contentToUpdate.content[level3]);
           });
       })

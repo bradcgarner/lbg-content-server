@@ -1,6 +1,6 @@
 'use strict';
 
-const { publicSystemsObject } = require('./data');
+const { publicSystemsObject } = require('../keys/data');
 
 const createProductHash = idSystem => {
   const productHash = {};

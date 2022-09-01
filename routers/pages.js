@@ -8,7 +8,7 @@ const logger              = require('log123').createLogger(pagesFile);
 const { respondToError  } = require('../comm/responses');
 const {
   terminology_cc_fields,
-  faq_cc_fields }         = require('../keys/keys');
+  faq_cc_fields }         = require('../config-db/keys');
   router.use(express.json());
 
 const userContainer = {};

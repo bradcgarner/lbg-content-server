@@ -24,8 +24,8 @@ module.exports = {
   
   sampleSchedRule:     process.env.SAMPLE_SCHEDULE_RULE || '*/5  * * * *',
 
-  keysCompileFile:     process.env.LOG_MODE === 'file' ? './keys/compile-keys.log' : '' ,
-  keysCalcCompileFile: process.env.LOG_MODE === 'file' ? './keys/compile-keys-calc.log' : '' ,
+  keysCompileFile:     process.env.LOG_MODE === 'file' ? './config-db/compile-keys.log' : '' ,
+  keysCalcCompileFile: process.env.LOG_MODE === 'file' ? './config-db/compile-keys-calc.log' : '' ,
 
   commFile:            process.env.LOG_MODE === 'file' ? './comm/comm.log'         : '' ,
 
